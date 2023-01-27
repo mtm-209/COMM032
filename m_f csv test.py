@@ -51,6 +51,7 @@ def target_with_random(path):
     df = pd.read_csv(path, encoding='utf-16', delimiter = '\t')
     df = df[['client_id','gender']]
     df = return_row_by_values(df, 'gender', ['male', 'female'])
+    
     #lst = df['client_id'].to_list()
     return df#lst
 train_path = r"G:\My Drive\common_voice_kpd\English\train.csv"  # From the google drive create a path to csv
