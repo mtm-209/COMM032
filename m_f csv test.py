@@ -8,17 +8,35 @@ import os
 import pathlib 
 import tqdm
 import codecs
+import shutil
 
-data_dir = r'G:\My Drive\common_voice_kpd\English\test.csv'  # From the google drive create a directory
-data_dir = pathlib.Path(data_dir)  # Create the path for the directory
-data_dir
-
-
-csv = r"G:\My Drive\common_voice_kpd\English\test.csv"  # From the google drive create a path to csv
 def return_row_by_values(df, col, values):
     return df[df[col].isin(values)]
 
-def target_lst(path):
+# Test at 50:50 
+def skew_calc(df, col, skew):
+    m_count, f_count = df[col].value_counts()
+    if skew == '50:50':
+        value = int(m_count-f_count)
+        return df[df[col].eq('male')].sample(n = (value))
+    if skew == '25:75':
+        val = int(m_count-(f_count/3))
+        return df[df[col].eq('male')].sample(n = (val))
+    if skew == '75:25':
+        if (3*f_count) <= m_count:
+            val = int(m_count - (f_count*3))  
+            return df[df[col].eq('male')].sample(n = (val))
+        else:
+            val = int(f_count - (m_count/3))
+            return df[df[col].eq('female')].sample(n = (val))
+    else:
+        return print("That is not a valid skew, please choose: '50:50', '25:75' or '75:25'")
+
+def skew_dataset(df, col, skew):
+    df = df.drop(skew_calc(df, col, skew).index)
+    return df
+
+def target_data(path, skew):
     """
     This function goes throught the target csv file. 
     It then returns a list of client ids that are gendered. 
@@ -40,21 +58,97 @@ def target_lst(path):
     lst: list of the client_ids to be used later. 
 
     """
-    df = pd.read_csv(path, encoding='utf-16', delimiter = '\t')
-    df = df[['client_id','gender']]
+    # Dataframe filtering
+    df = pd.read_csv(path)#, encoding='utf-16', delimiter = '\t')
+    df = df[['filename','gender']]
     df = return_row_by_values(df, 'gender', ['male', 'female'])
-    lst = df['client_id'].to_list()
-    return lst
+    df = skew_dataset(df, 'gender', skew)
 
+    # Create a list
+    lst = df['filename'].to_list()
+    return df , lst
 
-def target_with_random(path):
-    df = pd.read_csv(path, encoding='utf-16', delimiter = '\t')
-    df = df[['client_id','gender']]
-    df = return_row_by_values(df, 'gender', ['male', 'female'])
+test_path = r"C:\Users\matth\OneDrive\Documents\COMM032\cv-valid-test.csv"
+test_2 = r"C:\Users\matth\OneDrive\Documents\COMM032\cv-valid-train.csv"
+
+#df, lst = target_data(test_path, '50:50')
+#print(lst)
+
+def keep_string_from_column(df, column_name):
+    """
+    Changes the column string to only return the sample part.
+    """
+    df[column_name] = df[column_name].apply(lambda x: x.split("/")[-1])
+    return df
+
+def create_csv(df, file_name):
+    """
+    This creates a csv for your filtered dataframe.
+
+    """
+    csv = df.to_csv(file_name, index = False)
+    print(f"Successfully created {file_name}")
+
+#df, _ = target_data(test_path, '50:50')
+#df = keep_string_from_column(df, 'filename')
+#create_csv(df, 'test_file.csv')
+
+def to_txt(lst, file_name):
+    """
+    This function return a text file of the filtered list. 
+    """
+    txt = lst.to_txt(file_name)
+    return None  # Change for testing
+
+def output_file(target_file, output_path):
+    """
+    This functions goes through the target folder. 
+    Checks if they align with the txt file. 
+    Then places the file in a new directory. 
     
-    #lst = df['client_id'].to_list()
-    return df#lst
-train_path = r"G:\My Drive\common_voice_kpd\English\train.csv"  # From the google drive create a path to csv
+    Named: language/skew/data/gender/file.wav
+    For example we would get:
+    english/50-50/train/male/00001.wav
+    """
+    return None
 
-df = target_with_random(path = train_path)
-print(df['gender'].value_counts())
+def copy_files(folder_path, csv_file, language, skew, data, gender):
+    """
+    ---------------
+    THIS FUNCTION NEEDS DEBUGGING DO NOT RUN
+    ----------------
+    """
+    # Open the CSV file and read the contents
+    with open(csv_file, 'r') as file:
+        csv_reader = csv.reader(file)
+        csv_contents = list(csv_reader)
+
+    # Create the subfolders
+    subfolder_path = os.path.join(folder_path, language, skew, data, gender)
+    os.makedirs(subfolder_path, exist_ok=True)
+
+    # Iterate through all the files in the folder
+    for filename in os.listdir(folder_path):
+        # Check if the file is in the CSV
+        if filename in [row[0] for row in csv_contents]:
+            # Copy the file to the subfolder
+            file_path = os.path.join(folder_path, filename)
+            new_file_path = os.path.join(subfolder_path, filename)
+            shutil.copy2(file_path, new_file_path)
+
+#copy_files(r"C:\Users\matth\OneDrive\Documents\COMM032\cv-valid-test", r"C:\Users\matth\OneDrive\Documents\GitHub\COMM032\test_file.csv", "English", "50-50", "test", "male")
+
+#m_count, f_count = df['gender'].value_counts()
+#print(m_count, f_count, "This is the count before")
+
+#df = skew_dataset(df, 'gender', '75:25')
+#print("This is the count after", df['gender'].value_counts(normalize = True))
+
+# Test for 75:25
+#print(int(f_count - (m_count/3)))
+#print(m_count-f_count*3)
+#df = df.drop(df[df['gender'].eq('male')].sample(n = (int((f_count*3)-m_count))))
+
+#df = skew_dataset(df, 'gender', '25:75')
+#print(df['gender'].value_counts(normalize = True))
+#print(df)
