@@ -1,0 +1,43 @@
+import requests
+import tarfile
+import os
+from tqdm import tqdm
+import time
+
+import tarfile
+import os
+from tqdm import tqdm
+
+def extract_clips_and_validation(src_file, target_dir, internal_folder):
+    with tarfile.open(src_file, "r") as tar:
+        members = tar.getmembers()
+        # extract clips and validation
+        for member in tqdm(members, desc="Extracting files", unit="file"):
+            if member.name.startswith(internal_folder + "\clips") or member.name.endswith(internal_folder + "/validation.tsv"):
+                tar.extract(member, target_dir)
+        
+    # rename extracted directory to target_dir + last two characters of src_file
+    src_basename = os.path.basename(src_file)
+    new_dir = target_dir + src_basename[-9:-7]
+    os.rename(os.path.join(target_dir, internal_folder + "\clips"), os.path.join(new_dir, "clips"))
+    os.rename(os.path.join(target_dir, internal_folder + "\validation.tsv"), os.path.join(new_dir, "validation.tsv"))
+
+import tarfile
+import os
+
+def extract_tar_contents(file_name, target_dir):
+    with tarfile.open(file_name, "r:gz") as tar:
+        file_marker = file_name.rsplit("-",1)[0]
+        output_marker = file_name[-9:-7]
+        file_location = file_marker + "//" + output_marker
+        output_folder = os.path.join(target_dir, output_marker)
+        tar.extract("{}/clips".format(file_location), output_folder)
+        tar.extract("{}/validated.tsv".format(file_location), output_folder)
+    return output_folder
+
+
+
+tar_file = r"C:\Users\matth\OneDrive\Documents\COMM032\cv-corpus-12.0-delta-2022-12-07-en.tar.gz"
+target_dir = r"C:\Users\matth\OneDrive\Documents\COMM032"
+
+extract_tar_contents(file_name=tar_file, target_dir=target_dir)
