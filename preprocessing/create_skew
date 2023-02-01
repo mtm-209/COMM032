@@ -41,13 +41,13 @@ def skew_calc(df, col, skew):
     print(str): If the skew is wrong then a print string.
     """
     m_count, f_count = df[col].value_counts()
-    if skew == '50:50':
+    if skew == '50-50':
         value = int(m_count-f_count)
         return df[df[col].eq('male')].sample(n = (value))
-    if skew == '25:75':
+    if skew == '25-75':
         val = int(m_count-(f_count/3))
         return df[df[col].eq('male')].sample(n = (val))
-    if skew == '75:25':
+    if skew == '75-25':
         if (3*f_count) <= m_count:
             val = int(m_count - (f_count*3))  
             return df[df[col].eq('male')].sample(n = (val))
@@ -99,3 +99,43 @@ def create_csv(df, file_name):
     """
     csv = df.to_csv(file_name, index = False)
     print(f"Successfully created {file_name}")
+
+def target_data(path):#, skew):
+    """
+    This function goes throught the target csv file. 
+    It then returns a list of client ids that are gendered. 
+
+    ------
+    To add:
+    - Need to add way to create defined splits in the function 
+      for example if we want 50:50 m, f or 75:25 etc. 
+    - Want the spilts to be random 
+    - Way to turn the lst into a saveable csv file. 
+    - Method in which to add a random seed to repeat tests.
+    - Optimise for scalability
+    ------
+
+    Params:
+    path: path to the csv file.
+
+    Returns: 
+    lst: list of the client_ids to be used later. 
+
+    """
+    # Dataframe filtering
+    df = pd.read_csv(path, encoding='utf-16', delimiter = '\t')
+    #df = pd.read_table(path)#, delimiter = '\t')
+    #df = df[['client_id','gender']]
+    #df = return_row_by_values(df, 'gender', ['male', 'female'])
+    #df = skew_dataset(df, 'gender', skew)
+
+    # Create a list
+    #lst = df['client_id'].to_list()
+    return df #, lst
+
+    huh = r"C:\Users\matth\OneDrive\Documents\COMM032\validated.tsv"
+
+    df = target_data(path = huh) #skew = '50-50')
+    #print(df)
+
+    print("Hello_World?")
