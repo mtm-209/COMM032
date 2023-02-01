@@ -149,6 +149,6 @@ def copy_files(folder_path, csv_file, language, skew, data, gender):
 #print(m_count-f_count*3)
 #df = df.drop(df[df['gender'].eq('male')].sample(n = (int((f_count*3)-m_count))))
 
-#df = skew_dataset(df, 'gender', '25:75')
+df = skew_dataset(df, 'gender', '25:75')
 #print(df['gender'].value_counts(normalize = True))
-#print(df)
+print(df)

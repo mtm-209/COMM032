@@ -100,7 +100,7 @@ def create_csv(df, file_name):
     csv = df.to_csv(file_name, index = False)
     print(f"Successfully created {file_name}")
 
-def target_data(path):#, skew):
+def target_data(path, skew):
     """
     This function goes throught the target csv file. 
     It then returns a list of client ids that are gendered. 
@@ -108,7 +108,7 @@ def target_data(path):#, skew):
     ------
     To add:
     - Need to add way to create defined splits in the function 
-      for example if we want 50:50 m, f or 75:25 etc. 
+    for example if we want 50:50 m, f or 75:25 etc. 
     - Want the spilts to be random 
     - Way to turn the lst into a saveable csv file. 
     - Method in which to add a random seed to repeat tests.
@@ -123,19 +123,17 @@ def target_data(path):#, skew):
 
     """
     # Dataframe filtering
-    df = pd.read_csv(path, encoding='utf-16', delimiter = '\t')
-    #df = pd.read_table(path)#, delimiter = '\t')
-    #df = df[['client_id','gender']]
-    #df = return_row_by_values(df, 'gender', ['male', 'female'])
-    #df = skew_dataset(df, 'gender', skew)
+    #df = pd.read_csv(path, encoding='utf-16', delimiter = '\t')
+    df = pd.read_table(path)#, delimiter = '\t')
+    df = df[['path','gender']]
+    df = return_row_by_values(df, 'gender', ['male', 'female'])
+    df = skew_dataset(df, 'gender', skew)
 
     # Create a list
-    #lst = df['client_id'].to_list()
-    return df #, lst
+    lst = df['path'].to_list()
+    return lst
 
-    huh = r"C:\Users\matth\OneDrive\Documents\COMM032\validated.tsv"
+p = r"C:\Users\matth\OneDrive\Documents\COMM032\validated.tsv"
 
-    df = target_data(path = huh) #skew = '50-50')
-    #print(df)
-
-    print("Hello_World?")
+lst = target_data(path = p, skew = '50-50')
+#print(lst)

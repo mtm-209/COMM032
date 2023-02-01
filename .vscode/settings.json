@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        \C0MM032\preprocessing,
+    ],
+}
