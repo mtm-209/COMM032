@@ -1,6 +1,6 @@
-import sys; sys.path.append("C:/Users/matth/OneDrive/Documents/GitHub/COMM032/preprocessing")
+#import sys; sys.path.append("C:/Users/matth/OneDrive/Documents/GitHub/COMM032/preprocessing")
 
-from preprocessing.create_skew import *
+from create_skew import *
 import os
 import tarfile
 import time
