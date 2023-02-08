@@ -17,7 +17,7 @@ def unzip_tar_gz(file_path, destination_dir):
             if "clips" in member.name:
                 tar.extract(member, destination_dir)
             elif "validation.tsv" in member.name:
-                tar.extract(member, destionation_dir)
+                tar.extract(member, destination_dir)
     print("Files unzipped successfully to:", destination_dir)
 
 
