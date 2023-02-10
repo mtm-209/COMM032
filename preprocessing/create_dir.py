@@ -1,13 +1,4 @@
-import requests
-import tarfile
 import os
-from tqdm import tqdm
-import time
-import os
-
-tar_file = r"C:\Users\matth\OneDrive\Documents\COMM032\cv-corpus-12.0-delta-2022-12-07-en.tar.gz"
-target_dir = r"C:\Users\matth\OneDrive\Documents\COMM032\datasets"
-input_dir = r"C:\Users\matth\OneDrive\Documents\COMM032\datasets_zipped"
 
 
 def extract_and_create_dir(input_dir, target_dir):
@@ -19,17 +10,24 @@ def extract_and_create_dir(input_dir, target_dir):
         if filename.endswith(".tar.gz"):
             dir_name = filename.replace(".tar.gz", "").rsplit("-", 1)[-1]
             dir_path = os.path.join(target_dir, dir_name)
-            os.makedirs(dir_path, exist_ok=True)
-
-#extract_and_create_dir(input_dir, target_dir)  # This works!
+            os.makedirs(dir_path, exist_ok=True),
 
 
-def create_subfolders(target_dir, subfolder_names):
+def get_dir_names_only(input_dir):
+    dir_names = []
+    for filename in os.listdir(input_dir):
+        if filename.endswith(".tar.gz"):
+            dir_name = filename.replace(".tar.gz", "").rsplit("-", 1)[-1]
+            dir_names.append(dir_name)
+    return dir_names
+
+
+def create_subfolders(input_dir, target_dir, subfolder_names):
     """
     Create a subfolder for each skew.
     """
     extract_and_create_dir(input_dir, target_dir)  # Call the function to create a folder for each language
-    
+
     for folder in os.listdir(target_dir):
         folder_path = os.path.join(target_dir, folder)
         if os.path.isdir(folder_path):
@@ -37,6 +35,3 @@ def create_subfolders(target_dir, subfolder_names):
                 subfolder_path = os.path.join(folder_path, subfolder_name)
                 os.makedirs(subfolder_path, exist_ok=True)
 
-#extract_and_create_dir(input_dir, target_dir)  # This works!
-subfolder_names = ["25-75", "50-50", "75-25" ]
-create_subfolders(target_dir, subfolder_names)

@@ -94,18 +94,6 @@ def keep_string_from_column(df, col):
     return df
 
 
-def create_csv(df, file_name):
-    """
-    This creates a csv for your filtered dataframe.
-    ---------
-    Params:
-    df (DataFrame): Input DataFrame
-    file_name (str):
-    """
-    csv = df.to_csv(file_name, index=False)
-    print(f"Successfully created {file_name}")
-
-
 def target_data(path, skew):
     """
     This function goes throught the target csv file.
@@ -137,10 +125,5 @@ def target_data(path, skew):
 
     # Create a list
     lst = df['path'].to_list()
-    return lst
+    return lst, df
 
-
-#p = r"C:\Users\matth\OneDrive\Documents\COMM032\validated.tsv"
-
-#lst = target_data(path=p, skew='50-50')
-#print(lst)
