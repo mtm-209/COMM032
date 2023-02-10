@@ -1,0 +1,5 @@
+def check_shape(a, b):
+    if a == b:
+        return "Pass"
+    else:
+        return "Fail"
