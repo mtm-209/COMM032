@@ -1,3 +1,7 @@
+import os
+#from create_skew import *
+from create_dir import create_subfolders
+from read_tar import create_tsv, copy_clips_folder
 import numpy as np
 import pandas as pd
 import csv
@@ -25,6 +29,45 @@ def return_row_by_values(df, col, values):
     """
     return df[df[col].isin(values)]
 
+
+def skew_calc_old(df, col, skew, max_samples):
+    """
+    This function calculates the value to apply to the pd.sample
+    This allows it to create the desired skew.
+    If the skew is not available it will tell you.
+    ---------
+    Params:
+    df(DataFrame): Input dataframe
+    col(str): Target column
+    skew(str): Str of desired skew: can only be '50-50', '25-75' or '75-25'
+                at this point in time.
+    max_samples(int): Maximum number of samples to be returned.
+    ---------
+    Returns:
+    df(DataFrame): A filtered dataframe that satisfies the desired skew and has maximum max_samples rows.
+    print(str): If the skew is wrong then a print string.
+    """
+    m_count, f_count = df[col].value_counts()
+
+    if skew == '50-50':
+        male_count = int(max_samples / 2)
+        female_count = max_samples - male_count
+        male_sample = df[df[col].eq('male')].sample(n=male_count)
+        female_sample = df[df[col].eq('female')].sample(n=female_count)
+        return pd.concat([male_sample, female_sample])
+    if skew == '25-75':
+        female_count = int(3 * max_samples / 4)
+        male_count = max_samples - female_count
+        male_sample = df[df[col].eq('male')].sample(n=male_count)
+        female_sample = df[df[col].eq('female')].sample(n=female_count)
+        return pd.concat([male_sample, female_sample])
+    if skew == '75-25':
+        male_count = int(3 * max_samples / 4)
+        female_count = max_samples - male_count
+        male_sample = df[df[col].eq('male')].sample(n=male_count)
+        female_sample = df[df[col].eq('female')].sample(n=female_count)
+        return pd.concat([male_sample, female_sample])
+    print("Invalid skew parameter specified.")
 
 def skew_calc(df, col, skew, max_samples):
     """
@@ -61,8 +104,6 @@ def skew_calc(df, col, skew, max_samples):
     result_df = pd.concat([male_sample, female_sample])
 
     return result_df
-
-
 def skew_dataset(df, col, skew):
     """
     This function calls the skew calculator
@@ -128,4 +169,16 @@ def target_data(path, skew):
 
     # Create a list
     lst = df['path'].to_list()
-    return lst, df
+    return df, lst
+
+
+file = r"C:\Users\matth\OneDrive\Documents\COMM032\validated.tsv"
+skew_size = "0-100"
+
+
+val_df, _ = target_data(file, skew_size)
+#m_count, f_count = val_df['gender'].value_counts()
+
+print(val_df.shape)
+#print(m_count, f_count)
+print(val_df)

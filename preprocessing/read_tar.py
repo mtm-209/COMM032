@@ -48,3 +48,12 @@ def copy_clips_folder(src, dst, skew):
                 members_to_extract.append(member)
 
         tar.extractall(path=dst, members=members_to_extract)
+
+        # delete original files
+        for filename in desired_files:
+            src_file = os.path.join(clips_folder, filename)
+            if os.path.exists(src_file):
+                os.remove(src_file)
+                print(f"{src_file} deleted.")
+
+
