@@ -26,7 +26,7 @@ def check_for_repeated_mp3_files(main_folder_path):
                 all_mp3_files.append(os.path.join(foldername, filename))
 
     if len(all_mp3_files) == len(set(all_mp3_files)):
-        return "There are no repeat files"
+        return print(len(all_mp3_files),"There are no repeat files")
     else:
         return "There is a file repeated"
 
