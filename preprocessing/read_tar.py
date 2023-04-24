@@ -4,14 +4,15 @@ import tarfile
 from tqdm import tqdm
 
 
-def get_val_from_tar(file_path, skew):  # destination_dir):
-    with tarfile.open(file_path, "r:gz") as tar:
-        for member in tqdm(tar.getmembers()):
-            if "/validated.tsv" in member.name:
-                file = tar.extractfile(member)
-                val_lst, val_df = target_data(file, skew)
-                # print(member)#val_lst
-                return val_lst, val_df
+def get_val_from_tar(file_path, skew):
+    filename = os.path.basename(file_path)
+    mode = "r:gz" if os.path.splitext(filename)[1] == ".gz" else "r"
+    with tarfile.open(file_path, mode) as tar:
+        member = next((m for m in tar.getmembers() if os.path.basename(m.name) == "validated.tsv"), None)
+        if member:
+            file = tar.extractfile(member)
+            val_lst, val_df = target_data(file, skew)
+            return val_lst, val_df
 
 
 def create_tsv(file_path, output_path, skew):
@@ -27,8 +28,10 @@ def create_tsv(file_path, output_path, skew):
     return df.to_csv(path, sep="\t")
 
 
-def copy_clips_folder(src, dst, skew):
-    with tarfile.open(src, "r:gz") as tar:
+def copy_clips_folder(src, dst, skew, delete=False):
+    filename = os.path.basename(src)
+    mode = "r:gz" if os.path.splitext(filename)[1] == ".gz" else "r"
+    with tarfile.open(src, mode) as tar:
         clips_folder = None
         for member in tar.getmembers():
             if '/clips/' in member.name:
@@ -49,11 +52,10 @@ def copy_clips_folder(src, dst, skew):
 
         tar.extractall(path=dst, members=members_to_extract)
 
-        # delete original files
-        for filename in desired_files:
-            src_file = os.path.join(clips_folder, filename)
-            if os.path.exists(src_file):
-                os.remove(src_file)
-                print(f"{src_file} deleted.")
-
+        if delete:
+            # delete original files
+            for filename in desired_files:
+                src_file = os.path.join(dst, clips_folder, filename)
+                if os.path.exists(src_file):
+                    os.remove(src_file)
 

@@ -78,7 +78,7 @@ def skew_dataset(df, col, skew):
     Returns:
     df(DataFrame): Output DataFrame that has the desired skew.
     """
-    df = skew_calc(df, col, skew, max_samples=5000)
+    df = skew_calc(df, col, skew, max_samples=2500)
     return df
 
 

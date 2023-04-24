@@ -1,52 +1,50 @@
 import os
 import librosa
 import numpy as np
-import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 
-def convert_wavs_to_melspecs(dir_path):
-    # Define paths
-    wavs_folder = os.path.join(dir_path, 'wavs')
-    mels_folder = os.path.join(dir_path, 'mels')
+def convert_wav_to_mel(directory):
+    """
+    Converts .wav files in a directory to mel spectrograms and saves them as .npy files in a `mels` directory
+    at the same level as the original `wavs` directory.
 
-    # Create 'mels' subfolder if it doesn't exist
-    os.makedirs(mels_folder, exist_ok=True)
+    Args:
+        directory (str): The directory containing the `wavs` directory.
+    """
+    # Set the mels directory path
+    mels_directory = os.path.join(directory, "mels")
 
-    # Loop over all .wav files in 'wavs' subfolder
-    for filename in os.listdir(wavs_folder):
-        if filename.endswith('.wav'):
-            # Load audio file
-            filepath = os.path.join(wavs_folder, filename)
-            y, sr = librosa.load(filepath, sr=22050)
+    # Loop through each language directory
+    for language in os.listdir(os.path.join(directory, "wavs")):
+        language_path = os.path.join(directory, "wavs", language)
 
-            # Create mel spectrogram
-            mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=512, n_mels=128)
-            mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
+        # Loop through each ratio directory
+        for ratio in os.listdir(language_path):
+            ratio_path = os.path.join(language_path, ratio)
 
-            # Save mel spectrogram as .npy file in 'mels' subfolder
-            basename = os.path.splitext(filename)[0]
-            np.save(os.path.join(mels_folder, f'{basename}.npy'), mel_spec_db)
+            # Loop through each clip in the clips directory
+            clips_path = os.path.join(ratio_path, "clips")
+            for clip in tqdm(os.listdir(clips_path), desc=f"Processing {language} - {ratio}"):
+                clip_path = os.path.join(clips_path, clip)
 
+                # Load the audio file
+                y, sr = librosa.load(clip_path)
 
-def show_melspec(filename, dir_path):
-    # Define paths
-    mels_folder = os.path.join(dir_path, 'mels')
-    filepath = os.path.join(mels_folder, filename)
+                # Convert the audio to a mel spectrogram
+                mel_spec = librosa.feature.melspectrogram(y=y, sr=sr)
 
-    # Load mel spectrogram
-    mel_spec_db = np.load(filepath)
+                # Convert the mel spectrogram to a log mel spectrogram
+                log_mel_spec = librosa.power_to_db(mel_spec, ref=np.max)
 
-    # Show mel spectrogram
-    plt.figure(figsize=(10, 4))
-    plt.imshow(mel_spec_db, cmap='coolwarm', origin='lower', aspect='auto')
-    plt.colorbar(format='%+2.0f dB')
-    plt.title(f'Mel Spectrogram: {filename}')
-    plt.xlabel('Time (frames)')
-    plt.ylabel('Frequency (Hz)')
-    plt.tight_layout()
-    plt.show()
+                # Save the log mel spectrogram as a .npy file
+                save_path = os.path.join(mels_directory, language, ratio, clip[:-4] + ".npy")
+                os.makedirs(os.path.dirname(save_path), exist_ok=True)
+                np.save(save_path, log_mel_spec)
 
 
-#convert_wavs_to_melspecs(r'C:\Users\matth\OneDrive\Documents\COMM032\datasets_wav')
-#show_melspec("common_voice_es_18737267.npy", r"C:\Users\matth\OneDrive\Documents\COMM032\datasets_wav")
+directory = r"C:\Users\matth\OneDrive\Documents\COMM032\datasets_wav"
+convert_wav_to_mel(directory)
+
+
 

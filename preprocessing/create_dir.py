@@ -8,16 +8,23 @@ def extract_and_create_dir(input_dir, target_dir):
     """
     for filename in os.listdir(input_dir):
         if filename.endswith(".tar.gz"):
-            dir_name = filename.replace(".tar.gz", "").rsplit("-", 1)[-1]
+            dir_name = filename.replace(".tar.gz", "").split("-")[-1]
             dir_path = os.path.join(target_dir, dir_name)
-            os.makedirs(dir_path, exist_ok=True),
+            os.makedirs(dir_path, exist_ok=True)
+        elif filename.endswith(".tar"):
+            dir_name = filename.replace(".tar", "").split("-")[-1]
+            dir_path = os.path.join(target_dir, dir_name)
+            os.makedirs(dir_path, exist_ok=True)
 
 
 def get_dir_names_only(input_dir):
     dir_names = []
     for filename in os.listdir(input_dir):
         if filename.endswith(".tar.gz"):
-            dir_name = filename.replace(".tar.gz", "").rsplit("-", 1)[-1]
+            dir_name = filename.replace(".tar.gz", "").split("-")[-1]
+            dir_names.append(dir_name)
+        elif filename.endswith(".tar"):
+            dir_name = filename.replace(".tar", "").split("-")[-1]
             dir_names.append(dir_name)
     return dir_names
 
