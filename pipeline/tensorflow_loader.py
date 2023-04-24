@@ -1,69 +1,48 @@
 import os
-import tensorflow as tf
-import numpy as np
-
-import os
-import glob
-import librosa
 import numpy as np
 import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
 
-import os
-import tensorflow as tf
-import numpy as np
-import librosa
+# Define the batch size and image dimensions
+batch_size = 32
+img_height = 128
+img_width = 128
+num_classes = 3
 
+# Define the directory for the data
+data_dir = r"C:\Users\matth\OneDrive\Documents\COMM032\datasets_wav\mels_flipped\50-50"
 
-class CreateDataset(tf.keras.utils.Sequence):
-    def __init__(self, dir_path, batch_size, skew=None):
-        self.dir_path = dir_path
-        self.batch_size = batch_size
-        self.skew = skew
+# create a list to hold the labels
+labels = ['en', 'de', 'pt']
 
-        self.labels = []
-        self.filepaths = []
+# create an empty list to hold all the melspectograms
+melspectograms = []
 
-        self._parse_dir()
+# loop through each label
+for label in labels:
+    # set the path to the label directory
+    label_path = os.path.join(data_dir, label)
+    # loop through each .npy file in the label directory
+    for filename in os.listdir(label_path):
+        if filename.endswith('.npy'):
+            # load the melspectogram from the .npy file
+            with open(os.path.join(label_path, filename), 'rb') as f:
+                melspectogram = np.load(f)
+            # add the melspectogram and label to the list
+            melspectograms.append((melspectogram, label))
 
-    def __len__(self):
-        return int(np.ceil(len(self.filepaths) / self.batch_size))
+# shuffle the list of melspectograms
+np.random.shuffle(melspectograms)
 
-    def __getitem__(self, idx):
-        batch_filepaths = self.filepaths[idx * self.batch_size: (idx + 1) * self.batch_size]
-        batch_labels = self.labels[idx * self.batch_size: (idx + 1) * self.batch_size]
+# create a dataset from the list of melspectograms
+ds = tf.data.Dataset.from_generator(
+    lambda: ((melspectogram, label) for melspectogram, label in melspectograms),
+    output_types=(tf.float32, tf.string),
+    output_shapes=((128, 128, 3), ())
+)
 
-        batch_data = [self._load_data(filepath) for filepath in batch_filepaths]
+# print the dataset
+for element in ds.take(10):
+    print(element)
 
-        return tf.convert_to_tensor(batch_data), tf.convert_to_tensor(batch_labels)
-
-    def _parse_dir(self):
-        for lang_folder in os.listdir(self.dir_path):
-            if lang_folder not in ['en', 'es', 'pl']:
-                continue
-
-            lang_path = os.path.join(self.dir_path, lang_folder)
-
-            for abc_folder in os.listdir(lang_path):
-                abc_path = os.path.join(lang_path, abc_folder)
-
-                if self.skew and not abc_path.endswith(self.skew):
-                    continue
-
-                for filepath in os.listdir(abc_path):
-                    if filepath.endswith('.npy'):
-                        self.labels.append(lang_folder)
-                        self.filepaths.append(os.path.join(abc_path, filepath))
-
-    def _load_data(self, filepath):
-        data = np.load(filepath)
-        return data
-
-
-# Define data directory and batch size
-#data_dir = r'C:\Users\matth\OneDrive\Documents\COMM032\datasets_wav\mels'
-#batch_size = 1
-#skew = '50-50'
-# Create dataset
-#dataset = CreateDataset(data_dir, batch_size, skew)#shuffle=True)
-
-# Inspect components of dataset

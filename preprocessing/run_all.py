@@ -20,10 +20,9 @@ def process_folder(target_dir, output_dir, skew):
 
 
 # Only use these
-datasets = r"C:\Users\matth\OneDrive\Documents\COMM032\datasets"
+datasets = r"C:\Users\matth\OneDrive\Documents\COMM032\datasets_updated"
 datasets_zipped = r"C:\Users\matth\OneDrive\Documents\COMM032\datasets_zipped"
 skews_lst = ["10-90","25-75", "50-50", "75-25", "90-10"]
 
 # Run
 process_folder(datasets_zipped, datasets, skews_lst)
-# port_file = r"C:\Users\matth\OneDrive\Documents\COMM032\datasets_zipped\cv-corpus-10.0-delta-2022-07-04-pt.tar.gz"

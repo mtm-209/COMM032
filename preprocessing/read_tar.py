@@ -5,7 +5,9 @@ from tqdm import tqdm
 
 
 def get_val_from_tar(file_path, skew):
-    with tarfile.open(file_path, "r:gz") as tar:
+    filename = os.path.basename(file_path)
+    mode = "r:gz" if os.path.splitext(filename)[1] == ".gz" else "r"
+    with tarfile.open(file_path, mode) as tar:
         member = next((m for m in tar.getmembers() if os.path.basename(m.name) == "validated.tsv"), None)
         if member:
             file = tar.extractfile(member)
@@ -27,7 +29,9 @@ def create_tsv(file_path, output_path, skew):
 
 
 def copy_clips_folder(src, dst, skew, delete=False):
-    with tarfile.open(src, "r:gz") as tar:
+    filename = os.path.basename(src)
+    mode = "r:gz" if os.path.splitext(filename)[1] == ".gz" else "r"
+    with tarfile.open(src, mode) as tar:
         clips_folder = None
         for member in tar.getmembers():
             if '/clips/' in member.name:
