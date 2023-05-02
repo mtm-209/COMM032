@@ -2,7 +2,7 @@ import os
 from create_skew import *
 from create_dir import create_subfolders
 from read_tar import create_tsv, copy_clips_folder
-from dir_flipper import flip_directory_order
+from dir_flipper import flip_directory_order, flatten_directory
 
 
 def process_folder(target_dir, output_dir, skew, max_samples):
@@ -28,4 +28,5 @@ max_samples = 500  # Change for demo
 
 # Run
 process_folder(datasets_zipped, datasets, skews_lst, max_samples)
+flattened_dir = flatten_directory(datasets)
 flipped_dir = flip_directory_order(datasets)

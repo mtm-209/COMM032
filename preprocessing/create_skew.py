@@ -99,7 +99,7 @@ def keep_string_from_column(df, col):
 
 def target_data(path, skew, max_samples):
     """
-    This function goes throught the target csv file.
+    This function goes through the target csv file.
     It then returns a list of client ids that are gendered.
 
     ------
