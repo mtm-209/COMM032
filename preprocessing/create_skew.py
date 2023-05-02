@@ -63,7 +63,7 @@ def skew_calc(df, col, skew, max_samples):
     return result_df
 
 
-def skew_dataset(df, col, skew):
+def skew_dataset(df, col, skew, max_samples):
     """
     This function calls the skew calculator
     so that the target values can be dropped from the input df
@@ -78,7 +78,7 @@ def skew_dataset(df, col, skew):
     Returns:
     df(DataFrame): Output DataFrame that has the desired skew.
     """
-    df = skew_calc(df, col, skew, max_samples=2500)
+    df = skew_calc(df, col, skew, max_samples)
     return df
 
 
@@ -97,7 +97,7 @@ def keep_string_from_column(df, col):
     return df
 
 
-def target_data(path, skew):
+def target_data(path, skew, max_samples):
     """
     This function goes throught the target csv file.
     It then returns a list of client ids that are gendered.
@@ -124,7 +124,7 @@ def target_data(path, skew):
     df = pd.read_table(path)  # , delimiter = '\t')
     df = df[['path', 'gender']]
     df = return_row_by_values(df, 'gender', ['male', 'female'])
-    df = skew_dataset(df, 'gender', skew)
+    df = skew_dataset(df, 'gender', skew, max_samples)
 
     # Create a list
     lst = df['path'].to_list()

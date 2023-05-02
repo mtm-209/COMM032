@@ -47,4 +47,3 @@ def flatten_directory(input_dir):
 
 
 #flattened_dir = flatten_directory(r"C:\Users\matth\OneDrive\Documents\COMM032\datasets_wav\wavs")
-flipped_dir = flip_directory_order(r"C:\Users\matth\OneDrive\Documents\COMM032\datasets_new")
