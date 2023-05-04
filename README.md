@@ -46,9 +46,9 @@ In this project we have opted for using ffmpeg on the command line.
 **Linux:**
 
 1. Run the following command in your terminal to install ffmpeg:
-     ```
+   ```
      sudo apt-get install ffmpeg
-     ```
+   ```
 2. This command will work for Debian-based distributions like Ubuntu. For other distributions, you can check the official ffmpeg website for installation instructions.
 
 ### ffmpeg usage guide 
@@ -56,16 +56,23 @@ In this project we have opted for using ffmpeg on the command line.
 1. Open the Command Prompt. 
 2. Navigate to the directory containing the mp3 files that you want to convert. You can do this using the cd command. 
 3. You can navigate to that directory using the following command:
+   
+   ```bash
+   cd path\to\directory\split\language\
+   ```
+   4. Once you're in the directory containing the mp3 files, you can use the following command to convert all of the mp3 files to .wav format:
 
-    ```bash
-    cd path\to\directory\split\language\
-    ```
-4. Once you're in the directory containing the mp3 files, you can use the following command to convert all of the mp3 files to .wav format:
-
-    ```bash
-    for %i in ("*.mp3") do ffmpeg -i "%i" "%~ni.wav"
-    ```
-    This command uses a for loop to iterate over all of the mp3 files in the directory, and then uses ffmpeg to convert each mp3 file to .wav format. The resulting .wav files will be saved in the same directory as the original mp3 files.
+      ```bash
+      for %i in (*.mp3) do ffmpeg -i "%i" -c:a pcm_s16le -ar 44100 "%~ni.wav" && del "%i"
+      ```
+      ```bash
+      for %i in (*) do (
+          if not "%~xi" == ".wav" (
+              del "%i"
+          )
+      )
+      ```
+      This command uses a for loop to iterate over all of the mp3 files in the directory, and then uses ffmpeg to convert each mp3 file to .wav format. The resulting .wav files will be saved in the same directory as the original mp3 files. It then deletes the .mp3s and any other files such as .tsv.
 
 Wait for the command to finish executing. Depending on the number and size of the mp3 files, this may take a few minutes.
 Note you need to do this for every language and split separately.
@@ -76,17 +83,19 @@ Verify that the conversion was successful by checking the directory for the newl
 1. Open the Terminal. 
 2. Navigate to the directory containing the mp3 files that you want to convert. You can do this using the cd command. For example, if your mp3 files are located in a directory called input on your desktop, you can navigate to that directory using the following command:
 
-    ```bash
-    cd ~/path/to/directory/split/language/
-    ```
+   ```bash
+   cd ~/path/to/directory/split/language/
+   ```
 3. Once you're in the directory containing the mp3 files, you can use the following command to convert all of the mp3 files to .wav format:
 
-    ```bash
-    for f in *.mp3; do ffmpeg -i "$f" "${f%.mp3}.wav"; done
-    ```
-    This command uses a for loop to iterate over all of the mp3 files in the directory, and then uses ffmpeg to convert each mp3 file to .wav format. The resulting .wav files will be saved in the same directory as the original mp3 files.
+   ```bash
+   for i in *.mp3; do ffmpeg -i "$i" -c:a pcm_s16le -ar 44100 "${i%.*}.wav" && rm "$i"; done
+   find . ! -name '*.wav' -type f -delete
 
-    Again this command will take some time depending on your machine. Also verify that this has worked by checking it in your folder. Also this has to be doen for every language and split.
+   ```
+   This command uses a for loop to iterate over all of the mp3 files in the directory, and then uses ffmpeg to convert each mp3 file to .wav format. The resulting .wav files will be saved in the same directory as the original mp3 files. Any file that isn't .wav will be deleted also.
+
+   Again this command will take some time depending on your machine. Also verify that this has worked by checking it in your folder. Also this has to be doen for every language and split.
 
 ## Pipeline
 This is a breakdown of the model pipeline infrastructure

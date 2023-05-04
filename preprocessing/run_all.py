@@ -21,12 +21,12 @@ def process_folder(target_dir, output_dir, skew, max_samples):
 
 
 # Only use these
-datasets = r"C:\Users\matth\OneDrive\Documents\COMM032\demo_dataset"
-datasets_zipped = r"C:\Users\matth\OneDrive\Documents\COMM032\demo_zipped"
-skews_lst = ["10-90","25-75", "50-50", "75-25", "90-10"]
-max_samples = 500  # Change for demo
+datasets = r"G:\My Drive\demo_dataset"
+datasets_zipped = r"G:\My Drive\demo_zipped"
+skews_lst = ["25-75", "50-50"]
+samples = 10  # Change for demo
 
 # Run
-process_folder(datasets_zipped, datasets, skews_lst, max_samples)
+process_folder(datasets_zipped, datasets, skews_lst, samples)
 flattened_dir = flatten_directory(datasets)
 flipped_dir = flip_directory_order(datasets)
